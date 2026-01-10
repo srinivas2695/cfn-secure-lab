@@ -1,0 +1,33 @@
+name: IaC CI - CloudFormation Security
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  cfn-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+
+      - name: Install tools
+        run: |
+          pip install cfn-lint checkov
+
+      - name: Run CloudFormation lint
+        run: |
+          cfn-lint cfn/template.yaml
+
+      - name: Run Checkov security scan
+        run: |
+          checkov -f cfn/template.yaml
